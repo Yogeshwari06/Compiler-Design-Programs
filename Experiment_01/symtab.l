@@ -53,3 +53,35 @@ printf("%d\t%s\n", i + 1, symtab[i].name);
 fclose(yyin);
 return 0;
 }
+
+
+
+
+Output:
+
+Identifier : int
+Identifier : main
+Identifier : int
+Identifier : a
+Operator : =
+Constant : 10
+Identifier : int
+Identifier : b
+Operator : =
+Constant : 20
+Comment : // Addition
+Identifier : a
+Operator : =
+Identifier : a
+Operator : +
+Identifier : b
+Identifier : return
+Constant : 0
+
+SYMBOL TABLE
+S.No    Name
+1       int
+2       main
+3       a
+4       b
+5       return
