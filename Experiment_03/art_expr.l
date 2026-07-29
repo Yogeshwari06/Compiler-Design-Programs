@@ -1,76 +1,54 @@
-tac.l
+//art_expr.l
 %{
-#include &quot;tac.tab.h&quot;
-#include &lt;string.h&gt;
+#include&lt;stdio.h&gt;
+#include &quot;art_expr.tab.h&quot;
 %}
 %%
-[a-zA-Z][a-zA-Z0-9]* { yylval.str = strdup(yytext); return ID; }
-[0-9]+ { yylval.str = strdup(yytext); return NUM; }
-[\t\n ]+ { /* skip spaces */ }
-. { return yytext[0]; }
+[a-zA-Z][0-9a-zA-Z]* {return ID;}
+[0-9]+ {return DIG;}
+[ \t]+ {;}
+. {return yytext[0];}
+\n {return 0;}
 %%
 int yywrap() {
 return 1;
 }
-tac.y
+//art_expr.y
 %{
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
-int tempCount = 1;
-char temp[10];
+#include&lt;stdio.h&gt;
 %}
-%union { char *str; }
-%token &lt;str&gt; ID NUM
-
-%type &lt;str&gt; expr
+%token ID DIG
 %left &#39;+&#39; &#39;-&#39;
 %left &#39;*&#39; &#39;/&#39;
+
+%right UMINUS
 %%
-stmt: ID &#39;=&#39; expr { printf(&quot;%s = %s\n&quot;, $1, $3); }
-;
-expr: expr &#39;+&#39; expr {
-sprintf(temp, &quot;t%d&quot;, tempCount++);
-printf(&quot;%s = %s + %s\n&quot;, temp, $1, $3);
-$$ = strdup(temp);
-}
-| expr &#39;-&#39; expr {
-sprintf(temp, &quot;t%d&quot;, tempCount++);
-printf(&quot;%s = %s - %s\n&quot;, temp, $1, $3);
-$$ = strdup(temp);
-}
-| expr &#39;*&#39; expr {
-sprintf(temp, &quot;t%d&quot;, tempCount++);
-printf(&quot;%s = %s * %s\n&quot;, temp, $1, $3);
-$$ = strdup(temp);
-}
-| expr &#39;/&#39; expr {
-sprintf(temp, &quot;t%d&quot;, tempCount++);
-printf(&quot;%s = %s / %s\n&quot;, temp, $1, $3);
-$$ = strdup(temp);
-}
-| ID { $$ = $1; }
-| NUM { $$ = $1; }
-;
+stmt: expn ;
+expn: expn &#39;+&#39; expn | expn &#39;-&#39; expn | expn &#39;*&#39; expn | expn &#39;/&#39; expn | &#39;-&#39; expn %prec UMINUS |
+&#39;(&#39; expn &#39;)&#39; | DIG | ID;
 %%
 int main() {
-printf(&quot;Enter the expression:\n&quot;);
+printf(&quot;Enter the Expression\n&quot;);
 yyparse();
+printf(&quot;valid Expression\n&quot;);
 return 0;
 }
-int yyerror(char* s) {
-printf(&quot;Error: %s\n&quot;, s);
-return 0;
+int yyerror() {
+printf(&quot;Invalid Expression&quot;);
+exit(0);
 }
 
-OUTPUT:
-
-$ flex tac.l
-$ bison -d tac.y
-$ gcc tac.tab.c lex.yy.c -o tac -lfl
-$ ./tac
-Enter the expression:
-a = b + c * d
-t1 = c * d
-t2 = b + t1
-a = t2
+OUPUT;
+&quot;art_expr.y&quot; 33L, 372C written
+[gomathy@rhel5 ~]$ flex art_expr.l
+[gomathy@rhel5 ~]$ bison -d art_expr.y
+[gomathy@rhel5 ~]$ gcc lex.yy.c art_expr.tab.c -o art_expr -lfl
+[gomathy@rhel5 ~]$ ./art_expr
+Enter the Expression
+a+b*c-d/e
+valid Expression
+[gomathy@rhel5 ~]$ ./art_expr
+Enter the Expression
+a=b
+Invalid Expression
+[gomathy@rhel5 ~]$ _
