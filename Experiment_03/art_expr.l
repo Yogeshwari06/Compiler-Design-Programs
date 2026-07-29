@@ -39,16 +39,20 @@ exit(0);
 }
 
 OUPUT;
-&quot;art_expr.y&quot; 33L, 372C written
-[gomathy@rhel5 ~]$ flex art_expr.l
-[gomathy@rhel5 ~]$ bison -d art_expr.y
-[gomathy@rhel5 ~]$ gcc lex.yy.c art_expr.tab.c -o art_expr -lfl
-[gomathy@rhel5 ~]$ ./art_expr
+Input
+
+a+b*c
+
+Output
+
 Enter the Expression
-a+b*c-d/e
 valid Expression
-[gomathy@rhel5 ~]$ ./art_expr
+
+Input
+
+a+*b
+
+Output
+
 Enter the Expression
-a=b
 Invalid Expression
-[gomathy@rhel5 ~]$ _
